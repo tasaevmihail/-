@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .calculator {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .number-input {
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .result-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e8f4fd;
+      border-radius: 5px;
+      border-left: 4px solid #2196F3;
+    }
+    .factors-list {
+      font-weight: bold;
+      color: #2196F3;
+    }
+    label {
+      font-weight: 600;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+<div class="calculator">
+  <label for="numInput">Введите целое число:</label>
+  <input type="number" id="numInput" class="number-input"
+         min="2" value="2" onchange="calculateFactors(this)">
+
+  <div class="result-box">
+    <div>Множители числа <span id="currentNum">2</span>:</div>
+    <div class="factors-list" id="factorsResult">1, 2</div>
+  </div>
+</div>
+
+<script>
+  function calculateFactors(inputElement) {
+    let numberValue = parseInt(inputElement.value);
+    let factors = [];
+
+    for (let i = 1; i <= numberValue; i++) {
+      if (numberValue % i === 0) {
+        factors.push(i);
+      }
+    }
+
+    document.getElementById('currentNum').textContent = numberValue;
+    document.getElementById('factorsResult').textContent = factors.join(', ');
+  }
+
+  window.onload = function() {
+    calculateFactors(document.getElementById('numInput'));
+  };
+</script>
+</body>
+</html>

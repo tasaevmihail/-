@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    body {
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: system-ui, sans-serif;
+    }
+    .color-panel {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .color-box {
+      width: 200px;
+      height: 120px;
+      margin: 20px auto;
+      border-radius: 8px;
+      border: 2px solid #e1e5e9;
+      transition: background 0.2s;
+    }
+    .slider-wrapper {
+      margin: 25px 0;
+    }
+    .hue-control {
+      width: 100%;
+      margin: 10px 0;
+    }
+    .value-display {
+      margin-top: 15px;
+      padding: 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+<div class="color-panel">
+  <h3>Настройка цветового тона</h3>
+  <div class="color-box" id="colorArea"></div>
+  <div class="slider-wrapper">
+    <label>Интенсивность красного:</label>
+    <input type="range" min="0" max="255" value="128"
+           class="hue-control" id="colorController"
+           oninput="adjustHue(this)">
+  </div>
+  <div class="value-display">
+    Текущее значение: <span id="currentValue">128</span>
+  </div>
+</div>
+<script>
+  function adjustHue(controller) {
+    let redIntensity = controller.value;
+    let newColor = `rgb(${redIntensity}, 100, 150)`;
+    document.getElementById('colorArea').style.background = newColor;
+    document.getElementById('currentValue').textContent = redIntensity;
+  }
+  window.onload = function() {
+    adjustHue(document.getElementById('colorController'));
+  };
+</script>
+</body>
+</html>
