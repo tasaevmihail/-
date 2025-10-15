@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    canvas {
+      border: 2px solid #333;
+      background: #f8f8f8;
+      display: block;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+<h2>Перемещение квадрата с клавиатуры</h2>
+<h4 style="text-align: left">
+  ✅ Перемещение стрелками <br>
+  ✅ Пробел — переключает режим рисования / перемещения <br>
+  ✅ ESC — сбрасывает позицию и очищает холст <br>
+  ✅ 1 / 2 / 3 — меняют цвет квадрата <br>
+  ✅ B / M / S — меняют размер квадрата <br>
+</h4>
+<canvas id="canvas" width="600" height="500"></canvas>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  let x = 200, y = 150;
+  let size = 30;
+  let color = "red";
+  let drawMode = false;
+  const startPos = { x, y };
+
+  function drawSquare() {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, size, size);
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function moveSquare(keyCode) {
+    const step = 10;
+    switch (keyCode) {
+      case 37: x -= step; break;
+      case 38: y -= step; break;
+      case 39: x += step; break;
+      case 40: y += step; break;
+    }
+    if (!drawMode) {
+      clearCanvas();
+    }
+    drawSquare();
+  }
+
+  function handleKeyDown(e) {
+    const key = e.key;
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key)) {
+      moveSquare(e.keyCode);
+    } else if (key === " ") {
+      drawMode = !drawMode;
+    } else if (key === "Escape") {
+      x = startPos.x;
+      y = startPos.y;
+      clearCanvas();
+      drawSquare();
+    } else if (key === "1") color = "red";
+    else if (key === "2") color = "blue";
+    else if (key === "3") color = "green";
+    else if (key.toLowerCase() === "b") size = 50;
+    else if (key.toLowerCase() === "m") size = 30;
+    else if (key.toLowerCase() === "s") size = 15;
+  }
+
+  document.addEventListener("keydown", handleKeyDown);
+  drawSquare();
+</script>
+
+
+</body>
+</html>
