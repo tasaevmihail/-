@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Рисование следа мыши на Canvas</title>
+  <style>
+    #myCanvas {
+      border: 1px solid #000;
+      background-color: #f0f0f0;
+      cursor: crosshair;
+    }
+  </style>
+  <script>
+    var canvas;
+    var ctx;
+    var isDown = false;
+    function init() {
+      canvas = document.getElementById('myCanvas');
+      ctx = canvas.getContext('2d');
+      canvas.addEventListener("mouseup", handleUp);
+      canvas.addEventListener("mousedown", handleDown);
+      canvas.addEventListener("mousemove", handleMoved);
+    }
+    function handleDown(event) {
+      isDown = true;
+    }
+    function handleUp(event) {
+      isDown = false;
+    }
+    function handleMoved(event) {
+      var x = event.offsetX;
+      var y = event.offsetY;
+      if (isDown) {
+        ctx.fillStyle = 'red';
+      } else {
+        ctx.fillStyle = 'blue';
+      }
+
+      var size = 10; 
+      ctx.fillRect(x - size/2, y - size/2, size, size);
+    }
+  </script>
+</head>
+<body onload="init();">
+<h2>След мыши на Canvas (Красный - Нажата, Синий - Отпущена)</h2>
+<canvas id="myCanvas" width="600" height="400"></canvas>
+</body>
+</html>
