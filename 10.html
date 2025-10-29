@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>График функции</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f0f0f0;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      min-width: 250px;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .value {
+      display: inline-block;
+      width: 50px;
+      text-align: right;
+    }
+    canvas {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+<h1>График функции y = sin(x) с аффинными преобразованиями</h1>
+<div class="container">
+  <div class="controls">
+    <div class="control-group">
+      <label>Масштаб X: <span id="scaleXValue" class="value">50</span></label>
+      <input type="range" id="scaleX" min="10" max="100" value="50" step="1">
+    </div>
+    <div class="control-group">
+      <label>Масштаб Y: <span id="scaleYValue" class="value">50</span></label>
+      <input type="range" id="scaleY" min="10" max="100" value="50" step="1">
+    </div>
+    <div class="control-group">
+      <label>A: <span id="aValue" class="value">1.0</span></label>
+      <input type="range" id="a" min="-2" max="2" value="1" step="0.1">
+    </div>
+    <div class="control-group">
+      <label>B: <span id="bValue" class="value">0.0</span></label>
+      <input type="range" id="b" min="-2" max="2" value="0" step="0.1">
+    </div>
+    <div class="control-group">
+      <label>C: <span id="cValue" class="value">0.0</span></label>
+      <input type="range" id="c" min="-2" max="2" value="0" step="0.1">
+    </div>
+    <div class="control-group">
+      <label>D: <span id="dValue" class="value">1.0</span></label>
+      <input type="range" id="d" min="-2" max="2" value="1" step="0.1">
+    </div>
+    <div class="control-group">
+      <label>DX: <span id="dxValue" class="value">0</span></label>
+      <input type="range" id="dx" min="-200" max="200" value="0" step="1">
+    </div>
+    <div class="control-group">
+      <label>DY: <span id="dyValue" class="value">0</span></label>
+      <input type="range" id="dy" min="-200" max="200" value="0" step="1">
+    </div>
+    <button onclick="resetTransform()">Сбросить преобразования</button>
+  </div>
+  <canvas id="canvas" width="600" height="600"></canvas>
+</div>
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const scaleXSlider = document.getElementById('scaleX');
+  const scaleYSlider = document.getElementById('scaleY');
+  const aSlider = document.getElementById('a');
+  const bSlider = document.getElementById('b');
+  const cSlider = document.getElementById('c');
+  const dSlider = document.getElementById('d');
+  const dxSlider = document.getElementById('dx');
+  const dySlider = document.getElementById('dy');
+  const scaleXValue = document.getElementById('scaleXValue');
+  const scaleYValue = document.getElementById('scaleYValue');
+  const aValue = document.getElementById('aValue');
+  const bValue = document.getElementById('bValue');
+  const cValue = document.getElementById('cValue');
+  const dValue = document.getElementById('dValue');
+  const dxValue = document.getElementById('dxValue');
+  const dyValue = document.getElementById('dyValue');
+  function updateValues() {
+    scaleXValue.textContent = scaleXSlider.value;
+    scaleYValue.textContent = scaleYSlider.value;
+    aValue.textContent = parseFloat(aSlider.value).toFixed(1);
+    bValue.textContent = parseFloat(bSlider.value).toFixed(1);
+    cValue.textContent = parseFloat(cSlider.value).toFixed(1);
+    dValue.textContent = parseFloat(dSlider.value).toFixed(1);
+    dxValue.textContent = dxSlider.value;
+    dyValue.textContent = dySlider.value;
+  }
+  function drawFunction() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(
+            parseFloat(aSlider.value),
+            parseFloat(bSlider.value),
+            parseFloat(cSlider.value),
+            parseFloat(dSlider.value),
+            parseFloat(dxSlider.value),
+            parseFloat(dySlider.value)
+    );
+    ctx.beginPath();
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const scaleX = parseInt(scaleXSlider.value);
+    const scaleY = parseInt(scaleYSlider.value);
+
+    for (let x = -Math.PI * 2; x <= Math.PI * 2; x += 0.1) {
+      const y = Math.sin(x);
+      const canvasX = centerX + x * scaleX;
+      const canvasY = centerY - y * scaleY;
+
+      if (x === -Math.PI * 2) {
+        ctx.moveTo(canvasX, canvasY);
+      } else {
+        ctx.lineTo(canvasX, canvasY);
+      }
+    }
+    ctx.strokeStyle = '#e74c3c';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.strokeStyle = '#95a5a6';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(canvas.width, centerY);
+    ctx.moveTo(centerX, 0);
+    ctx.lineTo(centerX, canvas.height);
+    ctx.stroke();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  function resetTransform() {
+    aSlider.value = 1;
+    bSlider.value = 0;
+    cSlider.value = 0;
+    dSlider.value = 1;
+    dxSlider.value = 0;
+    dySlider.value = 0;
+    updateValues();
+    drawFunction();
+  }
+  scaleXSlider.addEventListener('input', updateValues);
+  scaleYSlider.addEventListener('input', updateValues);
+  aSlider.addEventListener('input', updateValues);
+  bSlider.addEventListener('input', updateValues);
+  cSlider.addEventListener('input', updateValues);
+  dSlider.addEventListener('input', updateValues);
+  dxSlider.addEventListener('input', updateValues);
+  dySlider.addEventListener('input', updateValues);
+
+  scaleXSlider.addEventListener('change', drawFunction);
+  scaleYSlider.addEventListener('change', drawFunction);
+  aSlider.addEventListener('change', drawFunction);
+  bSlider.addEventListener('change', drawFunction);
+  cSlider.addEventListener('change', drawFunction);
+  dSlider.addEventListener('change', drawFunction);
+  dxSlider.addEventListener('change', drawFunction);
+  dySlider.addEventListener('change', drawFunction);
+  updateValues();
+  drawFunction();
+</script>
+</body>
+</html>
