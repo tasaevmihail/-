@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Вариант 3 — Рисование сетки</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    canvas {
+      border: 1px solid #000;
+      background-color: #fff;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<h2>Вариант 3</h2>
+<div class="controls">
+  <label>
+    Количество узлов:
+    <input type="number" id="gridSize" min="2" max="50" value="10">
+  </label>
+  <label>
+    Толщина линии:
+    <input type="number" id="lineWidth" min="1" max="10" value="1">
+  </label>
+  <label>
+    Цвет линии:
+    <input type="color" id="lineColor" value="#000000">
+  </label>
+  <label>
+    Цвет фона:
+    <input type="color" id="bgColor" value="#ffffff">
+  </label>
+  <label>
+    <input type="checkbox" id="fillBg" checked>
+    Наличие заливки
+  </label>
+</div>
+<canvas id="canvas" width="400" height="400"></canvas>
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const gridSizeInput = document.getElementById('gridSize');
+  const lineWidthInput = document.getElementById('lineWidth');
+  const lineColorInput = document.getElementById('lineColor');
+  const bgColorInput = document.getElementById('bgColor');
+  const fillBgInput = document.getElementById('fillBg');
+  function drawGrid() {
+    const n = parseInt(gridSizeInput.value);
+    const lw = parseInt(lineWidthInput.value);
+    const lineColor = lineColorInput.value;
+    const bgColor = bgColorInput.value;
+    const fillBg = fillBgInput.checked;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = fillBg ? bgColor : "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = lw;
+    ctx.strokeStyle = lineColor;
+    const step = canvas.width / n;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const pos = i * step;
+      ctx.moveTo(pos, 0);
+      ctx.lineTo(pos, canvas.height);
+      ctx.moveTo(0, pos);
+      ctx.lineTo(canvas.width, pos);
+    }
+    ctx.stroke();
+  }
+  gridSizeInput.onchange =
+          lineWidthInput.onchange =
+                  lineColorInput.onchange =
+                          bgColorInput.onchange =
+                                  fillBgInput.onchange = drawGrid;
+  document.addEventListener('keydown', (e) => {
+    let val = parseInt(gridSizeInput.value);
+    if (e.key === '+' && val < 50) val++;
+    if (e.key === '-' && val > 2) val--;
+    gridSizeInput.value = val;
+    drawGrid();
+  });
+
+  drawGrid();
+</script>
+</body>
+</html>
