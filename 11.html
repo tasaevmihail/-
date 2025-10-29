@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drag-and-Drop линии</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .instructions {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      max-width: 600px;
+    }
+    .instructions p {
+      margin: 5px 0;
+    }
+    .color-info {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .color-sample {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    canvas {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+<h1>Drag-and-Drop линии</h1>
+
+<div class="instructions">
+  <p><strong>Инструкции:</strong></p>
+  <p>• Перетаскивайте линию, захватывая её в области чуть толще самой линии</p>
+  <p>• Нажмите клавиши 1, 2 или 3 для изменения цвета линии:</p>
+  <div class="color-info">
+    <div><span class="color-sample" style="background-color: #3498db;"></span> 1 - Синий</div>
+    <div><span class="color-sample" style="background-color: #e74c3c;"></span> 2 - Красный</div>
+    <div><span class="color-sample" style="background-color: #2ecc71;"></span> 3 - Зеленый</div>
+  </div>
+  <p>• Во время перетаскивания линия становится серой</p>
+</div>
+
+<canvas id="canvas" width="800" height="500"></canvas>
+<div class="status" id="status">Готов к работе. Цвет: синий</div>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const statusElement = document.getElementById('status');
+
+  let line = {
+    x1: 200,
+    y1: 250,
+    x2: 600,
+    y2: 250
+  };
+
+  const lineWidth = 5;
+  const hitAreaWidth = 20;
+
+  const colors = {
+    blue: '#3498db',
+    red: '#e74c3c',
+    green: '#2ecc71',
+    gray: '#95a5a6'
+  };
+
+  let currentColor = colors.blue;
+  let isDragging = false;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+
+
+  function drawLine() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.moveTo(line.x1, line.y1);
+    ctx.lineTo(line.x2, line.y2);
+    ctx.strokeStyle = isDragging ? colors.gray : currentColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(line.x1, line.y1, 8, 0, Math.PI * 2);
+    ctx.fillStyle = isDragging ? colors.gray : currentColor;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(line.x2, line.y2, 8, 0, Math.PI * 2);
+    ctx.fillStyle = isDragging ? colors.gray : currentColor;
+    ctx.fill();
+  }
+
+  function isPointNearLine(x, y) {
+
+    const A = x - line.x1;
+    const B = y - line.y1;
+    const C = line.x2 - line.x1;
+    const D = line.y2 - line.y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+
+    if (lenSq !== 0) {
+      param = dot / lenSq;
+    }
+
+    let xx, yy;
+
+    if (param < 0) {
+      xx = line.x1;
+      yy = line.y1;
+    } else if (param > 1) {
+      xx = line.x2;
+      yy = line.y2;
+    } else {
+      xx = line.x1 + param * C;
+      yy = line.y1 + param * D;
+    }
+
+    const dx = x - xx;
+    const dy = y - yy;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+
+    return distance <= hitAreaWidth / 2;
+  }
+
+
+  canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    if (isPointNearLine(mouseX, mouseY)) {
+      isDragging = true;
+
+      const centerX = (line.x1 + line.x2) / 2;
+      const centerY = (line.y1 + line.y2) / 2;
+      dragOffsetX = centerX - mouseX;
+      dragOffsetY = centerY - mouseY;
+      canvas.style.cursor = 'grabbing';
+      statusElement.textContent = 'Перетаскивание... Цвет: серый';
+      drawLine();
+    }
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+
+    if (isPointNearLine(mouseX, mouseY) && !isDragging) {
+      canvas.style.cursor = 'grab';
+    } else if (!isDragging) {
+      canvas.style.cursor = 'default';
+    }
+
+    if (isDragging) {
+
+      const centerX = mouseX + dragOffsetX;
+      const centerY = mouseY + dragOffsetY;
+
+      const oldCenterX = (line.x1 + line.x2) / 2;
+      const oldCenterY = (line.y1 + line.y2) / 2;
+      const deltaX = centerX - oldCenterX;
+      const deltaY = centerY - oldCenterY;
+
+      line.x1 += deltaX;
+      line.y1 += deltaY;
+      line.x2 += deltaX;
+      line.y2 += deltaY;
+
+      drawLine();
+    }
+  });
+
+  canvas.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      canvas.style.cursor = 'default';
+
+      let colorName = 'синий';
+      if (currentColor === colors.red) colorName = 'красный';
+      else if (currentColor === colors.green) colorName = 'зеленый';
+
+      statusElement.textContent = `Перетаскивание завершено. Цвет: ${colorName}`;
+      drawLine();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    if (isDragging) {
+      isDragging = false;
+      canvas.style.cursor = 'default';
+
+      let colorName = 'синий';
+      if (currentColor === colors.red) colorName = 'красный';
+      else if (currentColor === colors.green) colorName = 'зеленый';
+
+      statusElement.textContent = `Перетаскивание завершено. Цвет: ${colorName}`;
+      drawLine();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '1') {
+      currentColor = colors.blue;
+      statusElement.textContent = `Цвет изменен на синий${isDragging ? ' (активно перетаскивание)' : ''}`;
+      drawLine();
+    } else if (e.key === '2') {
+      currentColor = colors.red;
+      statusElement.textContent = `Цвет изменен на красный${isDragging ? ' (активно перетаскивание)' : ''}`;
+      drawLine();
+    } else if (e.key === '3') {
+      currentColor = colors.green;
+      statusElement.textContent = `Цвет изменен на зеленый${isDragging ? ' (активно перетаскивание)' : ''}`;
+      drawLine();
+    }
+  });
+
+  drawLine();
+</script>
+</body>
+</html>
