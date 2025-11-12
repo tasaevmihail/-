@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Callback-функции в jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: #f4f6fa;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 25px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+
+        p {
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056d6;
+        }
+
+        .text {
+            padding: 10px;
+            background: #eef3ff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Практическое задание: Callback-функции в jQuery</h1>
+
+<div class="panel">
+    <h2>1️⃣ Без callback-функции</h2>
+    <div class="text" id="text1">Этот текст будет скрыт без callback — alert появится сразу!</div>
+    <button id="btn1">Скрыть текст</button>
+</div>
+
+<div class="panel">
+    <h2>2️⃣ С callback-функцией</h2>
+    <div class="text" id="text2">Этот текст будет скрыт с callback — alert появится после скрытия!</div>
+    <button id="btn2">Скрыть текст с callback</button>
+</div>
+
+<div class="panel">
+    <h2>3️⃣ Сокрытие абзацев один за другим (рекурсия)</h2>
+    <div id="paragraphs">
+        <p>Первый абзац — исчезнет первым</p>
+        <p>Второй абзац — исчезнет вторым</p>
+        <p>Третий абзац — исчезнет последним</p>
+    </div>
+    <button id="btn3">Скрыть абзацы по очереди</button>
+</div>
+
+<script>
+    $(function() {
+
+        $('#btn1').click(function() {
+            $('#text1').slideUp(1000);
+            alert('Этот alert появляется сразу, а не после скрытия!');
+        });
+        $('#btn2').click(function() {
+            $('#text2').slideUp(1000, function() {
+                alert('Текст скрыт полностью! Callback сработал.');
+            });
+        });
+        $('#btn3').click(function() {
+            function hideNext(i) {
+                const $p = $('#paragraphs p').eq(i);
+                if ($p.length) {
+                    $p.fadeOut(600, function() {
+                        hideNext(i + 1);
+                    });
+                } else {
+                    alert('Все абзацы скрыты!');
+                }
+            }
+            hideNext(0);
+        });
+
+    });
+</script>
+
+</body>
+</html>
