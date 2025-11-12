@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анимации с jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: #eef1f5;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 25px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 500;
+        }
+
+        select, input[type="color"], button {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+
+        button {
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0056d6;
+        }
+
+        .box {
+            width: 120px;
+            height: 120px;
+            background: #ff5555;
+            margin: 30px auto;
+            border-radius: 12px;
+            opacity: 1;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ddd;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Анимации с jQuery ✨</h1>
+
+<!-- Задание 1 -->
+<div class="panel">
+    <h2>1️⃣ Комбинированная анимация трёх параметров</h2>
+    <div class="controls">
+        <label>Ширина:
+            <select id="widthVal">
+                <option value="100">100px</option>
+                <option value="200">200px</option>
+                <option value="300">300px</option>
+            </select>
+        </label>
+
+        <label>Высота:
+            <select id="heightVal">
+                <option value="100">100px</option>
+                <option value="150">150px</option>
+                <option value="250">250px</option>
+            </select>
+        </label>
+
+        <label>Прозрачность:
+            <select id="opacityVal">
+                <option value="1">1 (полностью видно)</option>
+                <option value="0.7">0.7</option>
+                <option value="0.3">0.3</option>
+            </select>
+        </label>
+
+        <button id="animateBox1">Анимировать</button>
+    </div>
+
+    <div class="box" id="box1"></div>
+</div>
+
+<hr>
+
+<!-- Задание 2 -->
+<div class="panel">
+    <h2>2️⃣ Анимация прямоугольника с выбором цвета и скорости</h2>
+    <div class="controls">
+        <label>Цвет:
+            <input type="color" id="boxColor" value="#ff5555">
+        </label>
+
+        <label>Скорость:
+            <select id="speedVal">
+                <option value="200">Быстро</option>
+                <option value="600" selected>Обычно</option>
+                <option value="1200">Медленно</option>
+            </select>
+        </label>
+
+        <button id="animateBox2">Анимировать</button>
+    </div>
+
+    <div class="box" id="box2"></div>
+</div>
+
+<script>
+    $(function() {
+        // Задание 1
+        $('#animateBox1').on('click', function() {
+            const w = $('#widthVal').val();
+            const h = $('#heightVal').val();
+            const o = $('#opacityVal').val();
+
+            $('#box1').animate({
+                width: w + 'px',
+                height: h + 'px',
+                opacity: o
+            }, 800);
+        });
+
+        // Задание 2
+        $('#animateBox2').on('click', function() {
+            const color = $('#boxColor').val();
+            const speed = parseInt($('#speedVal').val());
+
+            $('#box2').animate({
+                width: 'toggle',
+                height: 'toggle'
+            }, speed, function() {
+                $(this).css('background-color', color).animate({
+                    width: '120px',
+                    height: '120px',
+                    opacity: 1
+                }, speed);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

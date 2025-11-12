@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Страны по сторонам света</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: #eef1f5;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            max-width: 900px;
+            margin: 0 auto 30px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            background: #f7f8fa;
+            border: 1px solid #dcdfe3;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        label:hover {
+            background: #e7ebf0;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 6px;
+            accent-color: #007bff;
+            cursor: pointer;
+        }
+
+        .options {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin: 0 8px;
+            background: white;
+        }
+
+        ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        li.north { border-top: 4px solid #007bff; }
+        li.south { border-top: 4px solid #e74c3c; }
+        li.east { border-top: 4px solid #27ae60; }
+        li.west { border-top: 4px solid #f1c40f; }
+
+        li:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Страны по сторонам света 🌍</h1>
+
+<div class="panel">
+    <div class="filters">
+        <label><input type="checkbox" class="filter" value="north" checked> Север</label>
+        <label><input type="checkbox" class="filter" value="south" checked> Юг</label>
+        <label><input type="checkbox" class="filter" value="east" checked> Восток</label>
+        <label><input type="checkbox" class="filter" value="west" checked> Запад</label>
+    </div>
+
+    <div class="options">
+        <label>Эффект:
+            <select id="effect">
+                <option value="show">show/hide</option>
+                <option value="fade">fade</option>
+                <option value="slide">slide</option>
+            </select>
+        </label>
+        <label>Скорость:
+            <select id="speed">
+                <option value="400">Обычная</option>
+                <option value="1000">Медленно</option>
+                <option value="200">Быстро</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<ul id="countries">
+    <li class="north">Канада</li>
+    <li class="north">Норвегия</li>
+    <li class="north">Финляндия</li>
+    <li class="north">Россия</li>
+    <li class="south">Бразилия</li>
+    <li class="south">Аргентина</li>
+    <li class="south">ЮАР</li>
+    <li class="south">Австралия</li>
+    <li class="east">Китай</li>
+    <li class="east">Япония</li>
+    <li class="east">Южная Корея</li>
+    <li class="east">Индонезия</li>
+    <li class="west">США</li>
+    <li class="west">Франция</li>
+    <li class="west">Германия</li>
+    <li class="west">Испания</li>
+    <li class="north">Швеция</li>
+    <li class="south">Чили</li>
+    <li class="east">Индия</li>
+    <li class="west">Италия</li>
+</ul>
+
+<script>
+    $(function() {
+        function updateVisibility() {
+            const selected = $('.filter:checked').map(function() {
+                return $(this).val();
+            }).get();
+
+            const effect = $('#effect').val();
+            const speed = parseInt($('#speed').val());
+
+            $('li').each(function() {
+                const $el = $(this);
+                const match = selected.includes($el.attr('class'));
+
+                if (match && !$el.is(':visible')) {
+                    if (effect === 'fade') $el.fadeIn(speed);
+                    else if (effect === 'slide') $el.slideDown(speed);
+                    else $el.show(speed);
+                } else if (!match && $el.is(':visible')) {
+                    if (effect === 'fade') $el.fadeOut(speed);
+                    else if (effect === 'slide') $el.slideUp(speed);
+                    else $el.hide(speed);
+                }
+            });
+        }
+
+        $('.filter, #effect, #speed').on('change', updateVisibility);
+    });
+</script>
+
+</body>
+</html>
